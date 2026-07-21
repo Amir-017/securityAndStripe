@@ -1,26 +1,96 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-
+import { Role, User, UserDocument } from 'src/users/schemas/userSchema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
+    private jwtService: JwtService,
+  ) { }
+  // ================= REGISTER =================
+
+  async register(data: any) {
+    const existingUser = await this.userModel.findOne({
+      email: data.email,
+    });
+
+    if (existingUser) {
+      throw new BadRequestException('Email already exists');
+    }
+
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    const user = await this.userModel.create({
+      ...data,
+      password: hashedPassword,
+      provider: 'local',
+      role: Role.USER,
+    });
+
+    return this.generateToken(user);
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  // ================= LOCAL LOGIN =================
+
+  async validateLocalUser(email: string, password: string) {
+    const user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const isPasswordMatched = await bcrypt.compare(
+      password,
+      user.password,
+    );
+
+    if (!isPasswordMatched) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    return user;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  async login(user: UserDocument) {
+    return this.generateToken(user);
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
+ // ================= JWT =================
+
+  generateToken(user: UserDocument) {
+    const payload = {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+    };
+
+    return {
+      access_token: this.jwtService.sign(payload),
+      refresh_token: this.jwtService.sign(payload, {
+        expiresIn: '7d',
+      }),
+
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        // lastName: user.lastName,
+        role: user.role,
+        picture: user.picture,
+      },
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
-  }
 }
+
+
+
+
+
