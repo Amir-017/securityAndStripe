@@ -12,12 +12,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
 @UseGuards(JwtAuthGuard,RolesGuard)
-@Roles(Role.ADMIN)
+@Roles(Role.USER)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
-
+@UseGuards(JwtAuthGuard,RolesGuard)
+@Roles(Role.USER)
   @Get()
   findAll() {
     return this.usersService.findAll();

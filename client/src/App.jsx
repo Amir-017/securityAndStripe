@@ -1,7 +1,20 @@
+import { Route, Routes } from "react-router-dom";
+import Home from "./Pages/Home";
+import Login from "./Pages/Auth/Login";
+import Register from "./Pages/Auth/Register";
+import GoogleSuccess from "./auth/success";
+import NavBar from "./components/NavBar";
+
 function App() {
   return (
     <div className="App">
-      <h1 className="text-3xl font-bold text-red-500">Hello, World!</h1>
+      <NavBar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/auth/success" element={<GoogleSuccess />} />
+      </Routes>
     </div>
   );
 }
