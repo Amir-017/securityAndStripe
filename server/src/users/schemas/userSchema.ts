@@ -29,6 +29,9 @@ export class User {
   @Prop()
   googleId?: string;
 
+  @Prop()
+  githubId?: string;
+
   @Prop({
     type: String,
     enum: Role,

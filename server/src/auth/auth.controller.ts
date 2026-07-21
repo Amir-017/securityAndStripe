@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
+import { JwtAuthGuard } from './Guards/jwtGuard';
 
 @Controller('auth')
 export class AuthController {
@@ -41,5 +42,34 @@ export class AuthController {
     return res.redirect(
       `http://localhost:5173/auth/success?token=${req.user.access_token}`,
     );
+  }
+
+  // ================= GITHUB LOGIN =================
+
+  @Get('github')
+  @UseGuards(AuthGuard('github'))
+  async githubAuth() { }
+
+  @Get('github/callback')
+  @UseGuards(AuthGuard('github'))
+  async githubRedirect(@Req() req, @Res() res) {
+    res.cookie('refreshToken', req.user.refresh_token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.redirect(
+      `http://localhost:5173/auth/success?token=${req.user.access_token}`,
+    );
+  }
+
+  // ================= CURRENT USER =================
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async me(@Req() req) {
+    return this.authService.getMe(req.user.id);
   }
 }

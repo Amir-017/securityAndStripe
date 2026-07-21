@@ -9,6 +9,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GoogleStrategy } from './Stratiges/googleStrategy';
+import { GithubStrategy } from './Stratiges/githubStrategy';
 
 @Module({
  imports: [
@@ -35,6 +36,6 @@ import { GoogleStrategy } from './Stratiges/googleStrategy';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy, GithubStrategy],
 })
 export class AuthModule { }

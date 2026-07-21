@@ -84,6 +84,53 @@ export class AuthService {
     return this.generateToken(user);
   }
 
+  // ================= GITHUB LOGIN =================
+
+  async validateGithubUser(profile: any) {
+    const githubEmail = profile.emails?.[0]?.value;
+    const email = githubEmail || `${profile.username}@users.noreply.github.com`;
+
+    let user = await this.userModel.findOne({
+      $or: [{ githubId: profile.id }, { email }],
+    });
+
+    if (!user) {
+      user = await this.userModel.create({
+        email,
+        firstName: profile.displayName || profile.username,
+        picture: profile.photos?.[0]?.value,
+        githubId: profile.id,
+        provider: 'github',
+        role: Role.USER,
+      });
+    } else if (!user.githubId) {
+      user.githubId = profile.id;
+      user.provider = user.provider || 'github';
+      await user.save();
+    }
+
+    return this.generateToken(user);
+  }
+
+  // ================= CURRENT USER =================
+
+  async getMe(id: string) {
+    const user = await this.userModel.findById(id);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return {
+      id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      role: user.role,
+      picture: user.picture,
+      provider: user.provider,
+    };
+  }
+
  // ================= JWT =================
 
   generateToken(user: UserDocument) {

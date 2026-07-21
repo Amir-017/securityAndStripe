@@ -1,31 +1,30 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const GoogleSuccess = () => {
+const AuthSuccess = () => {
 
   const location = useLocation();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
 
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
-    console.log(token);
-    console.log(params);
 
-    if (token) {
-      localStorage.setItem("token", token);
-
-
-      navigate("/");
+    if (!token) {
+      navigate("/login");
+      return;
     }
+
+    localStorage.setItem("token", token);
+    navigate("/");
   }, []);
 
   return (
-    <div>
-      <h2>Logging you in...</h2>
+    <div className="flex items-center justify-center min-h-screen">
+      <h2 className="text-xl text-gray-700">Logging you in...</h2>
     </div>
   );
 };
 
-export default GoogleSuccess;
+export default AuthSuccess;
