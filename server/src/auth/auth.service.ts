@@ -62,6 +62,28 @@ export class AuthService {
     return this.generateToken(user);
   }
 
+    // ================= GOOGLE LOGIN =================
+
+  async validateGoogleUser(profile: any) {
+    const email = profile.emails[0].value;
+
+    let user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      user = await this.userModel.create({
+        email,
+        firstName: profile.name.givenName,
+        // lastName: profile.name.familyName,
+        picture: profile.photos[0].value,
+        googleId: profile.id,
+        provider: 'google',
+        role: Role.USER,
+      });
+    }
+
+    return this.generateToken(user);
+  }
+
  // ================= JWT =================
 
   generateToken(user: UserDocument) {

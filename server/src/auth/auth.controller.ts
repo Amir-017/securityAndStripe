@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
@@ -22,18 +22,24 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.authService.findOne(+id);
-  // }
+  // ================= GOOGLE LOGIN =================
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-  //   return this.authService.update(+id, updateAuthDto);
-  // }
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() { }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.authService.remove(+id);
-  // }
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleRedirect(@Req() req, @Res() res) {
+    res.cookie('refreshToken', req.user.refresh_token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.redirect(
+      `http://localhost:5173/auth/success?token=${req.user.access_token}`,
+    );
+  }
 }

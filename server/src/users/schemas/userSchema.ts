@@ -26,6 +26,9 @@ export class User {
   @Prop({ default: 'local' })
   provider?: string;
 
+  @Prop()
+  googleId?: string;
+
   @Prop({
     type: String,
     enum: Role,
