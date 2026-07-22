@@ -10,7 +10,6 @@ export class GoogleStrategy extends PassportStrategy(
   'google',
 ) {
   constructor(
-    // private configService: ConfigService,
     private authService: AuthService,
   ) {
     super({

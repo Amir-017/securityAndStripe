@@ -19,6 +19,7 @@ export const Register = () => {
             const response = await fetch("http://localhost:3000/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify(form),
             });
 
@@ -48,13 +49,11 @@ export const Register = () => {
     return (
     <div className="w-screen min-h-screen bg-slate-950 flex items-center justify-center px-4 py-8">
   <div className="relative w-full max-w-md sm:max-w-lg bg-slate-900 border border-slate-800 shadow-2xl shadow-black/40 rounded-2xl p-6 sm:p-8 lg:p-10">
-    {/* Corner rivets */}
     <div className="absolute top-3 left-3 w-1.5 h-1.5 rounded-full bg-slate-700" />
     <div className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-slate-700" />
     <div className="absolute bottom-3 left-3 w-1.5 h-1.5 rounded-full bg-slate-700" />
     <div className="absolute bottom-3 right-3 w-1.5 h-1.5 rounded-full bg-slate-700" />
 
-    {/* Vault Icon */}
     <div
       className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
       style={{

@@ -1,8 +1,10 @@
 import { Route, Routes } from "react-router-dom";
 import Home from "./Pages/Home";
-import Login from "./Pages/Auth/Login";
-import Register from "./Pages/Auth/Register";
+import { Login } from "./Pages/Login_Register/Login";
+import { Register } from "./Pages/Login_Register/Register";
 import AuthSuccess from "./auth/success";
+import Success from "./Pages/Payment_Success_cancel/Success";
+import Cancel from "./Pages/Payment_Success_cancel/Cancel";
 import NavBar from "./components/NavBar";
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/auth/success" element={<AuthSuccess />} />
+        <Route path="/payment/success" element={<Success />} />
+        <Route path="/payment/cancel" element={<Cancel />} />
       </Routes>
       </div>
     </div>

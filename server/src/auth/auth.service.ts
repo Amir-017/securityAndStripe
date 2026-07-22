@@ -7,13 +7,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) { }
+
   // ================= REGISTER =================
 
   async register(data: any) {
@@ -62,7 +65,7 @@ export class AuthService {
     return this.generateToken(user);
   }
 
-    // ================= GOOGLE LOGIN =================
+  // ================= GOOGLE LOGIN =================
 
   async validateGoogleUser(profile: any) {
     const email = profile.emails[0].value;
@@ -73,7 +76,6 @@ export class AuthService {
       user = await this.userModel.create({
         email,
         firstName: profile.name.givenName,
-        // lastName: profile.name.familyName,
         picture: profile.photos[0].value,
         googleId: profile.id,
         provider: 'google',
@@ -133,6 +135,14 @@ export class AuthService {
 
  // ================= JWT =================
 
+  private getRefreshSecret() {
+    return (
+      this.configService.get<string>('JWT_REFRESH_SECRET') ||
+      this.configService.get<string>('JWT_SECRET') ||
+      this.configService.get<string>('API_KEY')
+    );
+  }
+
   generateToken(user: UserDocument) {
     const payload = {
       id: user._id,
@@ -143,6 +153,7 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
       refresh_token: this.jwtService.sign(payload, {
+        secret: this.getRefreshSecret(),
         expiresIn: '7d',
       }),
 
@@ -150,11 +161,36 @@ export class AuthService {
         id: user._id,
         email: user.email,
         firstName: user.firstName,
-        // lastName: user.lastName,
         role: user.role,
         picture: user.picture,
       },
     };
+  }
+
+  // ================= REFRESH TOKEN =================
+
+  async refreshTokens(refreshToken: string) {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token missing');
+    }
+
+    let payload: { id: string; email: string; role: Role };
+
+    try {
+      payload = await this.jwtService.verifyAsync(refreshToken, {
+        secret: this.getRefreshSecret(),
+      });
+    } catch {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+
+    const user = await this.userModel.findById(payload.id);
+
+    if (!user) {
+      throw new UnauthorizedException('User no longer exists');
+    }
+
+    return this.generateToken(user);
   }
 
 }

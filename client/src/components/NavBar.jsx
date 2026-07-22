@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import api from "../Api/axios";
 
 export const NavBar = () => {
     const location = useLocation();
@@ -14,21 +15,20 @@ export const NavBar = () => {
             return;
         }
 
-        fetch("http://localhost:3000/auth/me", {
-            headers: { authorization: `Bearer ${token}` },
-        })
-            .then((res) => {
-                if (!res.ok) throw new Error("unauthorized");
-                return res.json();
-            })
-            .then((data) => setUser(data))
+        api
+            .get("/auth/me")
+            .then(({ data }) => setUser(data))
             .catch(() => {
-                localStorage.removeItem("token");
                 setUser(null);
             });
     }, [location]);
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            await api.post("/auth/logout");
+        } catch {
+            // ignore - clear client state regardless
+        }
         localStorage.removeItem("token");
         setUser(null);
         navigate("/login");
