@@ -9,11 +9,11 @@ import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [AuthModule, UsersModule, ConfigModule.forRoot({
-      isGlobal: true, 
-      envFilePath: '.env',
-    }),MongooseModule.forRoot(process.env.DATABASE_URL ?? 'mongodb://localhost:27017/nestSecurity'), PaymentsModule
-],
+    isGlobal: true,
+    envFilePath: '.env',
+  }), MongooseModule.forRoot(process.env.MONGODB_URI || ''), PaymentsModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
