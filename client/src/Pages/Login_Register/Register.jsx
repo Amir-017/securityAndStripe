@@ -29,8 +29,7 @@ export const Register = () => {
                 throw new Error(data.message || "Registration failed");
             }
 
-            localStorage.setItem("token", data.access_token);
-            navigate("/");
+            navigate("/login");
         } catch (err) {
             setError(err.message);
         } finally {
