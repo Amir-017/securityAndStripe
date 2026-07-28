@@ -27,8 +27,8 @@ export class PaymentsService {
           quantity: dto.quantity,
         },
       ],
-      success_url: `${this.configService.get('CLIENT_URL')}/payment/success`,
-      cancel_url: `${this.configService.get('CLIENT_URL')}/payment/cancel`,
+      success_url: `${this.configService.get('FRONTEND_URL')}/payment/success`,
+      cancel_url: `${this.configService.get('FRONTEND_URL')}/payment/cancel`,
     });
 
     return { url: session.url };
