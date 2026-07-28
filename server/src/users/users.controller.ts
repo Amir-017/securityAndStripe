@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from 'src/auth/Guards/jwtGuard';
-import { RolesGuard } from 'src/auth/Guards/roles.guard';
-import { Roles } from 'src/auth/decorators/roles.decorators';
+import { JwtAuthGuard } from '../auth/Guards/jwtGuard';
+import { RolesGuard } from '../auth/Guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorators';
 import { Role } from './schemas/userSchema';
 
 @Controller('users')
