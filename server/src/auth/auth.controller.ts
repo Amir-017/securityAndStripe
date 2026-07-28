@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, Res, UnauthorizedException } from '@nestjs/common';
-import type { Response } from 'express';
+import type { CookieOptions, Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
@@ -8,10 +8,11 @@ import { JwtAuthGuard } from './Guards/jwtGuard';
 
 const isProd = process.env.NODE_ENV === 'production';
 
-const REFRESH_COOKIE_OPTIONS = {
+
+const REFRESH_COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
   secure: isProd,
-  sameSite: (isProd ? 'none' : 'lax') as const,
+  sameSite: isProd ? 'none' : 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
