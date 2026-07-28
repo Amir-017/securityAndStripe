@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { User, UserSchema } from 'src/users/schemas/userSchema';
+import { User, UserSchema } from '../users/schemas/userSchema';
 import { MongooseModule } from '@nestjs/mongoose/dist/mongoose.module';
 import { LocalStrategy } from './Stratiges/localStrategy';
 import { JwtStrategy } from './Stratiges/jwtStrategy';
