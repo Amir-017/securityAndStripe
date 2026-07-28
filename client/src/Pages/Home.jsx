@@ -32,7 +32,7 @@ export const Home = () => {
 
     const handleProduct = async (product) => {
         try {
-            const response = await axios.post('http://localhost:3000/payments/checkout', {
+            const response = await api.post('/payments/checkout', {
                 productName: product.title,
                 price: product.price,
                 quantity: product.quantity,

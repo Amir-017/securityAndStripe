@@ -6,10 +6,12 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
 import { JwtAuthGuard } from './Guards/jwtGuard';
 
+const isProd = process.env.NODE_ENV === 'production';
+
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: false,
-  sameSite: 'lax' as const,
+  secure: isProd,
+  sameSite: (isProd ? 'none' : 'lax') as const,
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
@@ -52,11 +54,7 @@ export class AuthController {
 
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('refreshToken', {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    });
+    res.clearCookie('refreshToken', REFRESH_COOKIE_OPTIONS);
     return { message: 'Logged out' };
   }
 
@@ -72,7 +70,7 @@ export class AuthController {
     res.cookie('refreshToken', req.user.refresh_token, REFRESH_COOKIE_OPTIONS);
 
     return res.redirect(
-      `http://localhost:5173/auth/success?token=${req.user.access_token}`,
+      `${process.env.FRONTEND_URL}/auth/success?token=${req.user.access_token}`,
     );
   }
 
@@ -88,7 +86,7 @@ export class AuthController {
     res.cookie('refreshToken', req.user.refresh_token, REFRESH_COOKIE_OPTIONS);
 
     return res.redirect(
-      `http://localhost:5173/auth/success?token=${req.user.access_token}`,
+      `${process.env.FRONTEND_URL}/auth/success?token=${req.user.access_token}`,
     );
   }
 

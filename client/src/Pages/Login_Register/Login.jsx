@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import api from "../../Api/axios";
 
 export const Login = () => {
     const navigate = useNavigate();
@@ -16,7 +17,7 @@ export const Login = () => {
         setError("");
         setLoading(true);
         try {
-            const response = await fetch("http://localhost:3000/auth/login", {
+            const response = await fetch(`${api.defaults.baseURL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -39,11 +40,11 @@ export const Login = () => {
     };
 
     const handleGoogleLogin = () => {
-        window.location.href = "http://localhost:3000/auth/google";
+        window.location.href = `${api.defaults.baseURL}/auth/google`;
     };
 
     const handleGithubLogin = () => {
-        window.location.href = "http://localhost:3000/auth/github";
+        window.location.href = `${api.defaults.baseURL}/auth/github`;
     };
 
     return (
