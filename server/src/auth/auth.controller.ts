@@ -5,6 +5,7 @@ import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
 import { JwtAuthGuard } from './Guards/jwtGuard';
+import { ConfigService } from '@nestjs/config';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -18,7 +19,7 @@ const REFRESH_COOKIE_OPTIONS: CookieOptions = {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService,private readonly configService: ConfigService) {}
 
 
   @Post('register')
@@ -71,7 +72,7 @@ export class AuthController {
     res.cookie('refreshToken', req.user.refresh_token, REFRESH_COOKIE_OPTIONS);
 
     return res.redirect(
-      `${process.env.FRONTEND_URL}/auth/success?token=${req.user.access_token}`,
+      `${this.configService.get<string>('FRONTEND_URL')}/auth/success?token=${req.user.access_token}`,
     );
   }
 
@@ -87,7 +88,7 @@ export class AuthController {
     res.cookie('refreshToken', req.user.refresh_token, REFRESH_COOKIE_OPTIONS);
 
     return res.redirect(
-      `${process.env.FRONTEND_URL}/auth/success?token=${req.user.access_token}`,
+      `${this.configService.get<string>('FRONTEND_URL')}/auth/success?token=${req.user.access_token}`,
     );
   }
 
