@@ -6,8 +6,11 @@ export const NavBar = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     useEffect(() => {
+        setMenuOpen(false);
+
         const token = localStorage.getItem("token");
 
         if (!token) {
@@ -35,11 +38,12 @@ export const NavBar = () => {
     };
 
     return (
-        <div className="bg-gray-800 p-4 w-full fixed top-0 left-0 z-50 flex items-center justify-between">
-            <div className="container mx-auto flex justify-between items-center">
+        <div className="bg-gray-800 w-full fixed top-0 left-0 z-50">
+            <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                 <div className="text-white font-bold text-xl">My App</div>
 
-                <div className="flex items-center gap-4">
+                {/* Desktop links */}
+                <div className="hidden sm:flex items-center gap-4">
                     <Link to="/" className="text-white hover:text-gray-300 mx-2">
                         Home
                     </Link>
@@ -79,7 +83,67 @@ export const NavBar = () => {
                         </>
                     )}
                 </div>
+
+                {/* Mobile hamburger toggle */}
+                <button
+                    onClick={() => setMenuOpen((open) => !open)}
+                    className="sm:hidden text-white p-2"
+                    aria-label="Toggle menu"
+                    aria-expanded={menuOpen}
+                >
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        {menuOpen ? (
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        ) : (
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                        )}
+                    </svg>
+                </button>
             </div>
+
+            {/* Mobile menu */}
+            {menuOpen && (
+                <div className="sm:hidden border-t border-gray-700 px-4 pb-4 flex flex-col gap-3">
+                    <Link to="/" className="text-white hover:text-gray-300 py-1">
+                        Home
+                    </Link>
+
+                    {user ? (
+                        <>
+                            <div className="flex items-center gap-2 py-1">
+                                {user.picture ? (
+                                    <img
+                                        src={user.picture}
+                                        alt={user.firstName}
+                                        referrerPolicy="no-referrer"
+                                        className="w-8 h-8 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">
+                                        {user.firstName?.[0]?.toUpperCase()}
+                                    </div>
+                                )}
+                                <span className="text-white">{user.firstName}</span>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full"
+                            >
+                                Logout
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/login" className="text-white hover:text-gray-300 py-1">
+                                Login
+                            </Link>
+                            <Link to="/register" className="text-white hover:text-gray-300 py-1">
+                                Register
+                            </Link>
+                        </>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

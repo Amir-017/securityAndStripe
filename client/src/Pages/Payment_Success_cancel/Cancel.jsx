@@ -8,8 +8,7 @@ export const Cancel = () => {
         <div className="absolute top-3 left-3 w-1.5 h-1.5 rounded-full bg-slate-700" />
         <div className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-slate-700" />
         <div className="absolute bottom-3 left-3 w-1.5 h-1.5 rounded-full bg-slate-700" />
-        <div className="absolute bottom-3 right-3 w-
-          1.5 h-1.5 rounded-full bg-slate-700" />
+        <div className="absolute bottom-3 right-3 w-1.5 h-1.5 rounded-full bg-slate-700" />
 
         <div
           className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
