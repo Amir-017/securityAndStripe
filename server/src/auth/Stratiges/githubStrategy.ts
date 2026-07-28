@@ -5,6 +5,7 @@ import { VerifyCallback } from 'passport-google-oauth20';
 
 import { Injectable } from '@nestjs/common';
 import { AuthService } from '../auth.service';
+import { ConfigService } from '@nestjs/config/dist/config.service';
 @Injectable()
 export class GithubStrategy extends PassportStrategy(
   Strategy,
@@ -12,13 +13,14 @@ export class GithubStrategy extends PassportStrategy(
 ) {
   constructor(
     private authService: AuthService,
+    private readonly configService: ConfigService,
   ) {
     super({
-      clientID: process.env.GITHUB_CLIENT_ID,
+      clientID: configService.get<string>('GITHUB_CLIENT_ID'),
 
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      clientSecret: configService.get<string>('GITHUB_CLIENT_SECRET'),
 
-      callbackURL: process.env.GITHUB_CALLBACK_URL,
+      callbackURL: configService.get<string>('GITHUB_CALLBACK_URL'),
 
       scope: ['user:email'],
     });
