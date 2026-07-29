@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../Api/axios";
-import { QueryClient, useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 
 export const NavBar = () => {
     const location = useLocation();
@@ -32,7 +32,7 @@ export const NavBar = () => {
 
        
     }, [location]);
-    const handleLogout = userMutaion({
+    const handleLogout = useMutation({
         mutationFn: async () => {
             await api.post('/auth/logout');
         },
