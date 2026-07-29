@@ -26,7 +26,7 @@ export const NavBar = () => {
         const curenttoken = localStorage.getItem("token");
         setToken(curenttoken);
         if (!curenttoken) {
-            queryClient.removeQueries(['user']);
+            queryClient.removeQueries({queryKey: ['user']});
             return;
         }
 
@@ -38,7 +38,7 @@ export const NavBar = () => {
         },
         onSuccess: () => {
             localStorage.removeItem("token");
-            queryClient.removeQueries(['user']);
+            queryClient.removeQueries({queryKey: ['user']});
             navigate("/login");
         },
         onError: (error) => {
