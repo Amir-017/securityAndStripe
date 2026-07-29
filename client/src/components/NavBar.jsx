@@ -8,15 +8,17 @@ export const NavBar = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [menuOpen, setMenuOpen] = useState(false);
-
-
+    const [token, setToken] = useState(localStorage.getItem("token") || null);
+   if (token) { 
     const {data,isLoading,error} = useQuery({
+        token:localStorage.getItem("token"),
         queryKey:['user'],
         queryFn:async()=>{
-            const {data} = await api.get('/auth/me');
+            const {data} = await api.get('/auth/me')
             return data;
         }
-    })
+    })}
+   
     useEffect(() => {
         setMenuOpen(false);
 
@@ -29,7 +31,6 @@ export const NavBar = () => {
 
        
     }, [location]);
-  console.log(data)
     const handleLogout = async () => {
         try {
             await api.post("/auth/logout");
@@ -52,22 +53,22 @@ export const NavBar = () => {
                         Home
                     </Link>
 
-                    {user ? (
+                    {data ? (
                         <>
                             <div className="flex items-center gap-2">
-                                {user.picture ? (
+                                {data.picture ? (
                                     <img
-                                        src={user.picture}
-                                        alt={user.firstName}
+                                        src={data.picture}
+                                        alt={data.firstName}
                                         referrerPolicy="no-referrer"
                                         className="w-8 h-8 rounded-full object-cover"
                                     />
                                 ) : (
                                     <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">
-                                        {user.firstName?.[0]?.toUpperCase()}
+                                        {data.firstName?.[0]?.toUpperCase()}
                                     </div>
                                 )}
-                                <span className="text-white">{user.firstName}</span>
+                                <span className="text-white">{data.firstName}</span>
                             </div>
                             <button
                                 onClick={handleLogout}
@@ -112,22 +113,22 @@ export const NavBar = () => {
                         Home
                     </Link>
 
-                    {user ? (
+                    {data ? (
                         <>
                             <div className="flex items-center gap-2 py-1">
-                                {user.picture ? (
+                                {data.picture ? (
                                     <img
-                                        src={user.picture}
-                                        alt={user.firstName}
+                                        src={data.picture}
+                                        alt={data.firstName}
                                         referrerPolicy="no-referrer"
                                         className="w-8 h-8 rounded-full object-cover"
                                     />
                                 ) : (
                                     <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">
-                                        {user.firstName?.[0]?.toUpperCase()}
+                                        {data.firstName?.[0]?.toUpperCase()}
                                     </div>
                                 )}
-                                <span className="text-white">{user.firstName}</span>
+                                <span className="text-white">{data.firstName}</span>
                             </div>
                             <button
                                 onClick={handleLogout}
