@@ -3,76 +3,59 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import api from "../Api/axios";
 import AuthBackground from "../Pages/Login_Register/AuthBackground";
+import { useMutation, useQuery } from "@tanstack/react-query";
 export const Home = () => {
-    const [users, setUsers] = useState('');
-    const [products, setProducts] = useState([]);
-    const [quantity, setQuantity] = useState(0);
+    const [quantities, setQuantities] = useState({});
 
-    const fetchUsers = async () => {
-        try {
-           const {data} = await api.get("/users");
-            setUsers(data);
-        } catch (error) {
-            console.error("Error fetching users:", error);
-        }
-    };
-
-    const fetchProducts = async () => {
-        try {
-            const { data } = await axios.get('https://dummyjson.com/products');
-            setProducts([...data.products.map(product => ({ ...product, quantity: 0 }))]);
-        } catch (error) {
-            console.error("Error fetching products:", error);
-        }
-    }
-
-    useEffect(() => {
-        fetchUsers();
-        fetchProducts();
-    }, []);
-
-    const handleProduct = async (product) => {
-        try {
+    // Fetch products from the API using react-query
+    const { data: products, isLoading, error } = useQuery({
+        queryKey: ['products'],
+        queryFn: async () => {
+            const { data } = await api.get('https://dummyjson.com/products');
+            return data.products;
+        },
+    })
+    
+    // Handle post request to create a checkout session for a product
+    const handleProduct = useMutation({
+        mutationFn: async (product) => {
             const response = await api.post('/payments/checkout', {
                 productName: product.title,
                 price: product.price,
-                quantity: product.quantity,
+                quantity: quantities[product.id] || 0,
             });
-            window.location.href = response.data.url;
-        } catch (error) {
+            return response.data.url;
+        },
+        onSuccess: (url) => {
+            window.location.href = url;
+        },
+        onError: (error) => {
             console.error("Error creating checkout session:", error);
-        }
-    };
+        },
+    });
+
+    // Increase and decrease quantity for a product
     const increaseQuantity = (product) => {
-        const updatedProducts = products.map(p => {
-            if (p.id === product.id) {
-                if (p.quantity < p.stock) {
-                    return { ...p, quantity: p.quantity + 1 };
-                }
-            }
-            return p;
-        });
-        setProducts(updatedProducts);
+        setQuantities((prev) => ({
+            ...prev,
+            [product.id]: Math.min((prev[product.id] || 0) + 1, product.stock),
+        }));
     };
 
     const decreaseQuantity = (product) => {
-        const updatedProducts = products.map(p => {
-            if (p.id === product.id) {
-                if (p.quantity > 0) {
-                    return { ...p, quantity: p.quantity - 1 };
-                }
-            }
-            return p;
-        });
-        setProducts(updatedProducts);
+        setQuantities((prev) => ({
+            ...prev,
+            [product.id]: Math.max((prev[product.id] || 0) - 1, 0),
+        }));
     };
+
     return (
         <div className="relative min-h-screen bg-slate-950 overflow-hidden">
             {/* three js animated background */}
             <AuthBackground />
 
             <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
-                {products.map((product) => (
+                {products?.map((product) => (
                     <div
                         key={product.id}
                         className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg hover:border-amber-500/40 transition-all duration-300"
@@ -140,7 +123,7 @@ export const Home = () => {
                                 </button>
 
                                 <span className="text-xl font-bold text-white">
-                                    {product.quantity}
+                                    {quantities[product.id] || 0}
                                 </span>
 
                                 <button
@@ -151,19 +134,19 @@ export const Home = () => {
                                 </button>
                             </div>
                             <button
-                            disabled={product.quantity === 0}
-                                onClick={() => handleProduct(product)}
+                                disabled={quantities[product.id] === 0}
+                                onClick={() => handleProduct.mutate(product)}
                                 className="w-full mt-4 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold py-3 rounded-xl transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-lg shadow-amber-500/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 🛒
                                 <span>BUY NOW</span>
                             </button>
-                            </div>
+                        </div>
                     </div>
                 ))}
-                {products.length === 0 && <div className="w-full min-h-screen flex items-center justify-center col-span-full">
+                {products?.length === 0 && <div className="w-full min-h-screen flex items-center justify-center col-span-full">
                     <div className="loader"></div>
-                    </div>}
+                </div>}
             </div>
         </div>
     );

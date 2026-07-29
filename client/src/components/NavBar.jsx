@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../Api/axios";
+import { useQuery } from "@tanstack/react-query";
 
 export const NavBar = () => {
     const location = useLocation();
@@ -8,6 +9,14 @@ export const NavBar = () => {
     const [user, setUser] = useState(null);
     const [menuOpen, setMenuOpen] = useState(false);
 
+
+    const {data,isLoading,error} = useQuery({
+        queryKey:['user'],
+        queryFn:async()=>{
+            const {data} = await api.get('/auth/me');
+            return data;
+        }
+    })
     useEffect(() => {
         setMenuOpen(false);
 
@@ -18,14 +27,9 @@ export const NavBar = () => {
             return;
         }
 
-        api
-            .get("/auth/me")
-            .then(({ data }) => setUser(data))
-            .catch(() => {
-                setUser(null);
-            });
+       
     }, [location]);
-
+  console.log(data)
     const handleLogout = async () => {
         try {
             await api.post("/auth/logout");
