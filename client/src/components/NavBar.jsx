@@ -9,38 +9,42 @@ export const NavBar = () => {
     const [user, setUser] = useState(null);
     const [menuOpen, setMenuOpen] = useState(false);
     const [token, setToken] = useState(localStorage.getItem("token") || null);
-   if (token) { 
+    const queryClient = new QueryClient();
     const {data,isLoading,error} = useQuery({
-        token:localStorage.getItem("token"),
         queryKey:['user'],
         queryFn:async()=>{
             const {data} = await api.get('/auth/me')
             return data;
-        }
-    })}
+        },
+        enabled:!!token
+    })
+
    
     useEffect(() => {
         setMenuOpen(false);
 
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-            setUser(null);
+        const curenttoken = localStorage.getItem("token");
+        setToken(curenttoken);
+        if (!curenttoken) {
+            queryClient.removeQueries(['user']);
             return;
         }
 
        
     }, [location]);
-    const handleLogout = async () => {
-        try {
-            await api.post("/auth/logout");
-        } catch {
-            // ignore - clear client state regardless
-        }
-        localStorage.removeItem("token");
-        setUser(null);
-        navigate("/login");
-    };
+    const handleLogout = userMutaion({
+        mutationFn: async () => {
+            await api.post('/auth/logout');
+        },
+        onSuccess: () => {
+            localStorage.removeItem("token");
+            queryClient.clear();
+            navigate("/login");
+        },
+        onError: (error) => {
+            console.error("Error logging out:", error);
+        },
+    })
 
     return (
         <div className="bg-gray-800 w-full fixed top-0 left-0 z-50">
