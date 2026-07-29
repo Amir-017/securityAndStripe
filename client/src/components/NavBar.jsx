@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../Api/axios";
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const NavBar = () => {
     const location = useLocation();
@@ -9,7 +9,7 @@ export const NavBar = () => {
     const [user, setUser] = useState(null);
     const [menuOpen, setMenuOpen] = useState(false);
     const [token, setToken] = useState(localStorage.getItem("token") || null);
-    const queryClient = new QueryClient();
+    const queryClient = useQueryClient();
     const {data,isLoading,error} = useQuery({
         queryKey:['user'],
         queryFn:async()=>{
