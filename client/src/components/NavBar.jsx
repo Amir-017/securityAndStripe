@@ -38,7 +38,7 @@ export const NavBar = () => {
         },
         onSuccess: () => {
             localStorage.removeItem("token");
-            queryClient.clear();
+            queryClient.removeQueries(['user']);
             navigate("/login");
         },
         onError: (error) => {
