@@ -75,7 +75,7 @@ export const NavBar = () => {
                                 <span className="text-white">{data.firstName}</span>
                             </div>
                             <button
-                                onClick={handleLogout}
+                                onClick={handleLogout.mutate}
                                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                             >
                                 Logout
@@ -135,7 +135,7 @@ export const NavBar = () => {
                                 <span className="text-white">{data.firstName}</span>
                             </div>
                             <button
-                                onClick={handleLogout}
+                                onClick={handleLogout.mutate}
                                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full"
                             >
                                 Logout
