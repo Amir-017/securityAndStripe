@@ -68,7 +68,8 @@ export const Home = () => {
     };
     return (
         <div className="relative min-h-screen bg-slate-950 overflow-hidden">
-
+            {/* three js animated background */}
+            <AuthBackground />
 
             <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
                 {products.map((product) => (

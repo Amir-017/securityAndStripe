@@ -49,7 +49,8 @@ export const Register = () => {
 
     return (
         <div className="relative w-screen min-h-screen bg-slate-950 flex items-center justify-center px-4 py-8 overflow-hidden">
-          
+            {/* three js animated background */}
+            <AuthBackground />
 
             <div className="relative z-10 w-full max-w-md sm:max-w-lg bg-slate-900/95 backdrop-blur-sm border border-slate-800 shadow-2xl shadow-black/40 rounded-2xl p-6 sm:p-8 lg:p-10">
                 <div className="absolute top-3 left-3 w-1.5 h-1.5 rounded-full bg-slate-700" />
